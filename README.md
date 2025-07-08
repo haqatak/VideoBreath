@@ -86,7 +86,7 @@ I terminalen (med det virtuelle miljøet aktivert), naviger til `Python/Code`-ma
 ```bash
 python servidor.py
 ```
-Serveren vil starte og begynne å kringkaste sin tilstedeværelse på det lokale nettverket for automatisk oppdagelse av klienten. Den vil skrive ut sin lokale IP-adresse og porten den lytter på (standard er `http://<din-ip>:5000`). Noter deg denne adressen hvis automatisk oppdagelse feiler.
+Serveren vil starte og begynne å kringkaste sin tilstedeværelse på det lokale nettverket for automatisk oppdagelse av klienten. Den vil skrive ut sin lokale IP-adresse og porten den lytter på (standard er nå `http://<din-ip>:58001`). Noter deg denne adressen hvis automatisk oppdagelse feiler.
 
 **2. Start Klienten:**
 Åpne en *ny* terminal (eller en ny fane), naviger til `Python/Code`-mappen, og aktiver det virtuelle miljøet. Kjør deretter:
@@ -101,11 +101,12 @@ Klienten kobler til serveren på følgende måte (prioritert rekkefølge):
     Eksempel på `client_config.ini`:
     ```ini
     [server]
-    address = http://192.168.1.10:5000
+    address = http://192.168.1.10:58001
     ; Du kan endre adressen ovenfor til IP-adressen eller vertsnavnet til serveren din.
+    ; Standardporten er 58001.
     ```
-3.  **Standardadresse**: Hvis verken automatisk oppdagelse lykkes eller en gyldig konfigurasjonsfil finnes (eller adressen i filen er ugyldig), vil klienten falle tilbake til standardadressen `http://127.0.0.1:5000` (localhost).
-4.  **Opprettelse av `client_config.ini`**: Hvis `client_config.ini` ikke finnes når klienten starter, og automatisk oppdagelse ikke finner en server, vil en standard `client_config.ini` bli opprettet med `http://127.0.0.1:5000` som adresse. Du kan deretter redigere denne filen manuelt.
+3.  **Standardadresse**: Hvis verken automatisk oppdagelse lykkes eller en gyldig konfigurasjonsfil finnes (eller adressen i filen er ugyldig), vil klienten falle tilbake til standardadressen `http://127.0.0.1:58001` (localhost).
+4.  **Opprettelse av `client_config.ini`**: Hvis `client_config.ini` ikke finnes når klienten starter, og automatisk oppdagelse ikke finner en server, vil en standard `client_config.ini` bli opprettet med `http://127.0.0.1:58001` som adresse. Du kan deretter redigere denne filen manuelt.
 
 **Bruk av GUI (Klientprogrammet):**
 Når klienten starter og kobler seg til serveren, vil du se følgende:

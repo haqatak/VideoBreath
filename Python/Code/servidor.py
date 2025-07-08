@@ -59,8 +59,9 @@ def get_local_ip():
 def broadcast_presence():
     """Sender UDP broadcast-meldinger for serveroppdagelse."""
     server_ip = get_local_ip()
-    # Bruker serverens faktiske port, som er 5000 for Flask-appen
-    message = f"VITAL_SIGN_SERVER_INFO:{server_ip}:5000".encode('utf-8')
+    # Bruker serverens faktiske port, som nå er 58001 for Flask-appen
+    flask_port = 58001
+    message = f"VITAL_SIGN_SERVER_INFO:{server_ip}:{flask_port}".encode('utf-8')
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -193,7 +194,8 @@ if __name__ == '__main__':
     broadcast_thread = threading.Thread(target=broadcast_presence, daemon=True)
     broadcast_thread.start()
 
+    flask_port = 58001 # Definer porten her også for app.run
     server_ip = get_local_ip()
-    print(f"Flask server kjører på http://{server_ip}:5000")
+    print(f"Flask server kjører på http://{server_ip}:{flask_port}")
     print(f"Trykk CTRL+C for å avslutte.")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=flask_port)

@@ -40,8 +40,8 @@ import socket
 
 # Konfigurasjonsfil og Discovery-innstillinger
 CONFIG_FILE = "client_config.ini"
-DEFAULT_BASE_URL = "http://127.0.0.1:5000" # Fallback hvis ingen server blir funnet eller konfigurert
-DISCOVERY_PORT = 50001
+DEFAULT_BASE_URL = "http://127.0.0.1:58001" # Fallback hvis ingen server blir funnet eller konfigurert, bruk ny port
+DISCOVERY_PORT = 50001 # Porten for å sende/motta discovery UDP-pakker, kan forbli den samme
 DISCOVERY_TIMEOUT = 3 # Sekunder å lytte etter server-broadcasts
 
 def discover_server():
@@ -114,11 +114,22 @@ def get_base_url():
     # Opprett en standard konfigurasjonsfil hvis den ikke finnes og ingen server ble oppdaget
     if not os.path.exists(CONFIG_FILE) and not discovered_url:
         try:
-            config['server'] = {'address': DEFAULT_BASE_URL,
-                                'comment': 'Du kan endre adressen ovenfor til IP-adressen eller vertsnavnet til serveren din, eller la den stå tom for automatisk oppdagelse.'}
+            config['server'] = {
+                'address': DEFAULT_BASE_URL,
+                'comment1': '# Serveradresse for Vitalparametermonitor.',
+                'comment2': '# Hvis denne verdien er satt, vil den overstyre automatisk oppdagelse.',
+                'comment3': f'# La den stå tom eller kommenter ut linjen "address = ..." for å bruke automatisk oppdagelse.',
+                'comment4': f'# Standardporten for serveren er nå {DEFAULT_BASE_URL.split(":")[-1]}. Eksempel: http://192.168.1.100:{DEFAULT_BASE_URL.split(":")[-1]}'
+            }
             with open(CONFIG_FILE, 'w') as configfile:
-                config.write(configfile)
-            print(f"Opprettet en standard konfigurasjonsfil: {CONFIG_FILE}")
+                # Skriv kommentarer manuelt for bedre formatering i .ini-filen
+                configfile.write("[server]\n")
+                configfile.write(f"{config['server']['comment1']}\n")
+                configfile.write(f"{config['server']['comment2']}\n")
+                configfile.write(f"{config['server']['comment3']}\n")
+                configfile.write(f"{config['server']['comment4']}\n")
+                configfile.write(f"address = {config['server']['address']}\n")
+            print(f"Opprettet en standard konfigurasjonsfil: {CONFIG_FILE} med port {DEFAULT_BASE_URL.split(':')[-1]}")
         except Exception as e:
             print(f"Kunne ikke opprette standard konfigurasjonsfil: {e}")
     return DEFAULT_BASE_URL
