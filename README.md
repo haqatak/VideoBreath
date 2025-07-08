@@ -53,20 +53,43 @@ Installer nødvendige Python-biblioteker. Det anbefales på det sterkeste å bru
     ```bash
     pip install opencv-python numpy scipy flask flask-cors pillow requests configparser
     ```
+    Alternativt, hvis du har klonet dette repoet og `requirements.txt` er i `Python/Code`-mappen:
+    ```bash
+    pip install -r Python/Code/requirements.txt
+    ```
 
-### Kjøre applikasjonen (Python Klient/Server)
+
+### Kjøre applikasjonen med Oppstartskript (Anbefalt)
+For enklere oppsett og oppstart, bruk skriptene i `scripts`-mappen. Disse vil håndtere opprettelse av virtuelt miljø og installasjon av avhengigheter automatisk.
+
+**For Linux/macOS:**
+1.  Åpne en terminal.
+2.  Naviger til `scripts`-mappen: `cd scripts`
+3.  Gjør skriptet kjørbart (trengs bare første gang): `chmod +x start.sh`
+4.  Kjør skriptet: `./start.sh`
+    Skriptet vil guide deg gjennom prosessen og spørre om du vil starte serveren, klienten, eller begge.
+
+**For Windows:**
+1.  Åpne en Ledetekst (Command Prompt) eller PowerShell.
+2.  Naviger til `scripts`-mappen: `cd scripts`
+3.  Kjør skriptet: `start.bat`
+    Skriptet vil guide deg og spørre om du vil starte serveren, klienten, eller begge. Komponentene startes i nye vinduer.
+
+### Manuell Kjøring (Python Klient/Server)
+
+Hvis du foretrekker å kjøre komponentene manuelt etter at forutsetningene er installert og det virtuelle miljøet er aktivert:
 
 Systemet består av en server (`Python/Code/servidor.py`) som utfører vitalparameterestimeringen og en klient (`Python/Code/cliente.py`) som viser resultatene. Begge må kjøres fra `Python/Code`-mappen.
 
 **1. Start Serveren:**
-Naviger til `Python/Code`-mappen i terminalen (med det virtuelle miljøet aktivert) og kjør:
+I terminalen (med det virtuelle miljøet aktivert), naviger til `Python/Code`-mappen og kjør:
 ```bash
 python servidor.py
 ```
 Serveren vil starte og begynne å kringkaste sin tilstedeværelse på det lokale nettverket for automatisk oppdagelse av klienten. Den vil skrive ut sin lokale IP-adresse og porten den lytter på (standard er `http://<din-ip>:5000`). Noter deg denne adressen hvis automatisk oppdagelse feiler.
 
 **2. Start Klienten:**
-Åpne en *ny* terminal (eller en ny fane i din eksisterende terminal), naviger til `Python/Code`-mappen, og aktiver det virtuelle miljøet på samme måte som for serveren hvis du ikke allerede har gjort det i den nye terminalen/fanen. Kjør deretter:
+Åpne en *ny* terminal (eller en ny fane), naviger til `Python/Code`-mappen, og aktiver det virtuelle miljøet. Kjør deretter:
 ```bash
 python cliente.py
 ```

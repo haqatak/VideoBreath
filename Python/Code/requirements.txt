@@ -1,0 +1,8 @@
+opencv-python
+numpy
+scipy
+Flask
+Flask-CORS
+Pillow
+requests
+configparser
