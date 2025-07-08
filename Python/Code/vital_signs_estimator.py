@@ -27,10 +27,11 @@ import cv2
 import threading
 import numpy as np
 from collections import deque
-from Code.config import (FRAME_CHUNK, ROI_PADDING, VIDEO_PATH)
-from Code.preprocessing import preprocess_frame, postprocess_frame
-from Code.face_detector import FaceDetector
-from Code.signal_processing import process_buffer_evm
+# Direct imports as these modules are in the same directory (Python/Code)
+from config import (FRAME_CHUNK, ROI_PADDING, VIDEO_PATH)
+from preprocessing import preprocess_frame, postprocess_frame
+from face_detector import FaceDetector
+from signal_processing import process_buffer_evm
 
 class VitalSignsEstimator:
     """

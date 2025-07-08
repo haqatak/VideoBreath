@@ -38,7 +38,8 @@ x, y, w, h = roi # ROI estabilizada
 
 import mediapipe as mp
 from collections import deque
-from Code.config import ROI_CHANGE_THRESHOLD, ROI_WEIGHTS
+# Direct import as config.py is in the same directory (Python/Code)
+from config import ROI_CHANGE_THRESHOLD, ROI_WEIGHTS
 
 class FaceDetector:
     """

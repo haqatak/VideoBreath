@@ -26,7 +26,8 @@ import scipy.fftpack as fft
 import cv2
 from scipy.signal import butter, filtfilt
 from sklearn.decomposition import FastICA, PCA
-from Code.config import LOW_HEART, HIGH_HEART, LOW_RESP, HIGH_RESP, LEVELS, FPS, ALPHA
+# Direct import as config.py is in the same directory (Python/Code)
+from config import LOW_HEART, HIGH_HEART, LOW_RESP, HIGH_RESP, LEVELS, FPS, ALPHA
 
 def build_laplacian_pyramid(frame, levels):
     """Construye una pirámide Laplaciana."""

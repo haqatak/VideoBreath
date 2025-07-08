@@ -23,8 +23,8 @@ Bruk:
 
 from flask import Flask, jsonify, Response
 from flask_cors import CORS
-from Code.vital_signs_estimator import VitalSignsEstimator
-from Code.config import (VIDEO_PATH)
+from vital_signs_estimator import VitalSignsEstimator # Direkte import
+from config import (VIDEO_PATH) # Direkte import
 import threading
 import cv2
 import socket
