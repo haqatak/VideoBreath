@@ -30,7 +30,8 @@ import tkinter as tk
 import threading
 import requests
 import time
-import cv2
+import cv2 # Ensure cv2 is imported
+import numpy as np # Ensure numpy is imported for frombuffer
 import PIL.Image, PIL.ImageTk
 from tkinter import ttk, messagebox
 import configparser
@@ -301,20 +302,73 @@ class VitalSignsClient:
 
     def stop_video_stream(self):
         self.video_running = False
+        # Sikrer at video_label tømmes hvis tråden avsluttes unormalt eller videoen stoppes
+        if hasattr(self.video_label, 'imgtk'):
+            self.video_label.config(image='')
+            self.video_label.imgtk = None
+
 
     def video_stream(self):
-        cap = cv2.VideoCapture(f"{BASE_URL}/calibrate")
-        while self.video_running:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            img = PIL.Image.fromarray(frame)
-            imgtk = PIL.ImageTk.PhotoImage(image=img)
-            self.video_label.imgtk = imgtk
-            self.video_label.configure(image=imgtk)
-        cap.release()
-        self.video_label.config(image='')
+        stream_url = f"{BASE_URL}/calibrate"
+        try:
+            # Bruk requests for å hente MJPEG-strømmen
+            r = requests.get(stream_url, stream=True, timeout=5) # Legg til timeout
+            if r.status_code != 200:
+                print(f"Feil: Kunne ikke koble til videostrøm. Status: {r.status_code}")
+                self.root.after(0, messagebox.showerror, "Videofeil", f"Kunne ikke hente videostrøm fra {stream_url}. Status: {r.status_code}")
+                self.video_running = False
+                return
+
+            bytes_buffer = bytes()
+            for chunk in r.iter_content(chunk_size=1024):
+                if not self.video_running: # Sjekk om videoen skal stoppes
+                    break
+                bytes_buffer += chunk
+                # Søk etter JPEG start- og sluttmarkører
+                a = bytes_buffer.find(b'\xff\xd8') # JPEG start
+                b = bytes_buffer.find(b'\xff\xd9') # JPEG slutt
+                if a != -1 and b != -1:
+                    jpg = bytes_buffer[a:b+2]
+                    bytes_buffer = bytes_buffer[b+2:]
+
+                    # Dekod JPEG-data til et OpenCV-bilde
+                    frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+                    if frame is not None:
+                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        img = PIL.Image.fromarray(frame)
+                        imgtk = PIL.ImageTk.PhotoImage(image=img)
+
+                        # Oppdater video_label i hovedtråden
+                        if self.video_running: # Dobbeltsjekk før UI-oppdatering
+                            self.video_label.imgtk = imgtk
+                            self.video_label.configure(image=imgtk)
+                    else:
+                        print("Kunne ikke dekode frame fra videostrøm.")
+
+        except requests.exceptions.ConnectionError:
+            print(f"Videostrøm: Kunne ikke koble til {stream_url}.")
+            if self.video_running: # Bare vis feilmelding hvis brukeren aktivt prøvde å starte videoen
+                 self.root.after(0, messagebox.showerror, "Videofeil", f"Kunne ikke koble til videostrømmen på {stream_url}.")
+        except requests.exceptions.Timeout:
+            print(f"Videostrøm: Timeout ved tilkobling til {stream_url}.")
+            if self.video_running:
+                self.root.after(0, messagebox.showerror, "Videofeil", f"Tilkoblingen til videostrømmen på {stream_url} timet ut.")
+        except Exception as e:
+            print(f"En uventet feil oppstod i videostrømmen: {e}")
+            if self.video_running: # Vis bare feil hvis den fortsatt skal kjøre
+                self.root.after(0, messagebox.showerror, "Videofeil", f"En uventet feil skjedde: {e}")
+        finally:
+            self.video_running = False # Sørg for at flagget er satt til false
+            # Tøm bildet når strømmen stopper eller feiler, fra hovedtråden
+            self.root.after(0, self.clear_video_label)
+
+    def clear_video_label(self):
+        """Tømmer videoetiketten på en trådsikker måte."""
+        if hasattr(self.video_label, 'imgtk'):
+            self.video_label.config(image='')
+            self.video_label.imgtk = None
+        self.video_button.config(text="Vis Video") # Tilbakestill knappetekst
+
 
     def start_estimation(self):
         if not self.is_running:
